@@ -1,0 +1,2 @@
+// Package forgedomain
+package forgedomain
