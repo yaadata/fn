@@ -1,2 +1,3 @@
 [tools]
 go = "1.26"
+"aqua:pre-commit/pre-commit" = "4.5.1"

@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: go-fmt
+      - id: go-vet
+      - id: golangci-lint
+        args: [--config=.golangci-lint.yaml]
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.3.0
+    hooks:
+      - id: conventional-pre-commit
+        name: fn conventional commit check
+        stages: [commit-msg]
+        args:
+          - --strict
+          - --verbose
+          - chore
+          - docs
+          - enhance
+          - feat
+          - fix
+          - refactor
+          - release
+          - test
