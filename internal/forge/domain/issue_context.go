@@ -1,8 +1,6 @@
 package forgedomain
 
-import (
-	. "github.com/yaadata/optionsgo/core"
-)
+import . "github.com/yaadata/optionsgo"
 
 type IssueContext struct {
 	Assignee Option[string]

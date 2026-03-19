@@ -3,9 +3,8 @@ package client
 import (
 	"context"
 
-	. "github.com/yaadata/optionsgo/core"
-
 	forgedomain "github.com/yaadata/fn/internal/forge/domain"
+	. "github.com/yaadata/optionsgo"
 )
 
 type Forge interface {

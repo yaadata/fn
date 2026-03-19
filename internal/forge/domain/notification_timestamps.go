@@ -3,7 +3,7 @@ package forgedomain
 import (
 	"time"
 
-	. "github.com/yaadata/optionsgo/core"
+	. "github.com/yaadata/optionsgo"
 )
 
 type NotificationTimestamps struct {

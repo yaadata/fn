@@ -5,4 +5,3 @@ linters:
     staticcheck:
       dot-import-whitelist:
         - "github.com/yaadata/optionsgo"
-        - "github.com/yaadata/optionsgo/core"
