@@ -1,7 +1,12 @@
 package config
 
-type FetchStrategy int
+type FetchStrategy string
 
 const (
-	FetchStrategyOnDemand FetchStrategy = iota
+	FetchStrategyPull FetchStrategy = "pull"
+	FetchStrategyPush FetchStrategy = "push"
 )
+
+func (fs FetchStrategy) String() string {
+	return string(fs)
+}

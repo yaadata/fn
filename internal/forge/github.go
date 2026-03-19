@@ -2,9 +2,11 @@ package forge
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/google/go-github/v79/github"
+	"github.com/pkg/browser"
 	. "github.com/yaadata/optionsgo"
 	"github.com/yaadata/optionsgo/extension"
 
@@ -55,20 +57,21 @@ func (g *githubForge) GetMergeProposals(ctx context.Context, repository forgedom
 	}
 	var resp forgedomain.MergeProposals
 	for _, p := range pullRequests {
-		labels := make([]string, 0, len(p.Labels))
+		labels := make([]string, len(p.Labels))
 		for i, l := range p.Labels {
 			labels[i] = l.GetName()
 		}
 		resp = append(resp, forgedomain.MergeProposal{
-			Author: p.GetUser().GetName(),
+			Author: p.GetUser().GetLogin(),
 			Context: forgedomain.MergeProposalContext{
 				Body:   p.GetBody(),
 				Labels: labels,
 				Url:    extension.OptionFromPointer(p.HTMLURL),
 			},
-			Number: uint(p.GetNumber()),
-			State:  githubMergeProposalStatus(p.State, p.MergedAt),
-			Title:  p.GetTitle(),
+			Repository: repository,
+			Number:     uint(p.GetNumber()),
+			State:      githubMergeProposalStatus(p.State, p.MergedAt),
+			Title:      p.GetTitle(),
 			Timestamps: forgedomain.MergeProposalTimestamps{
 				CreatedAt: p.GetCreatedAt().Time,
 				UpdatedAt: p.GetUpdatedAt().Time,
@@ -76,6 +79,23 @@ func (g *githubForge) GetMergeProposals(ctx context.Context, repository forgedom
 		})
 	}
 	return Ok(resp)
+}
+
+func (g *githubForge) OpenMergeProposal(ctx context.Context, mp forgedomain.MergeProposal) bool {
+	if mp.Context.Url.IsSome() {
+		return browser.OpenURL(mp.Context.Url.Unwrap()) == nil
+	}
+
+	proposalURL := g.resolveGitHubResourceURL(
+		mp.Repository,
+		fmt.Sprintf("/pull/%d", mp.Number),
+	)
+
+	if proposalURL.IsNone() {
+		return false
+	}
+
+	return browser.OpenURL(proposalURL.Unwrap()) == nil
 }
 
 func (g *githubForge) GetIssues(ctx context.Context) Result[forgedomain.Issues] {
@@ -91,23 +111,59 @@ func (g *githubForge) GetIssues(ctx context.Context) Result[forgedomain.Issues] 
 	}
 	var response forgedomain.Issues
 	for _, issue := range issues {
-		labels := make([]string, 0, len(issue.Labels))
+		labels := make([]string, len(issue.Labels))
 		for i, l := range issue.Labels {
 			labels[i] = l.GetName()
 		}
+		repo := githubRepository(issue.Repository)
 		response = append(response, forgedomain.Issue{
-			Author: issue.GetUser().GetName(),
-			Id:     uint(issue.GetID()),
+			Author: issue.GetUser().GetLogin(),
+			Id:     forgedomain.IssueId(issue.GetNumber()),
 			Context: forgedomain.IssueContext{
-				Assignee: extension.OptionFromPointer(issue.GetAssignee().Name),
+				Assignee: extension.OptionFromPointer(issue.GetAssignee().Login),
 				Labels:   labels,
 				Url:      extension.OptionFromPointer(issue.HTMLURL),
 			},
-			Status: githubIssueStatus(issue.State),
-			Title:  issue.GetTitle(),
+			Repository: repo,
+			Status:     githubIssueStatus(issue.State),
+			Title:      issue.GetTitle(),
 		})
 	}
-	return Err[forgedomain.Issues](nil)
+	return Ok(response)
+}
+
+func (g *githubForge) OpenIssue(ctx context.Context, issue forgedomain.Issue) bool {
+	if issue.Context.Url.IsSome() {
+		return browser.OpenURL(issue.Context.Url.Unwrap()) == nil
+	}
+	if issue.Repository.IsNone() {
+		return false
+	}
+
+	repo := issue.Repository.Unwrap()
+	issueUrl := g.resolveGitHubResourceURL(
+		repo,
+		fmt.Sprintf("/issues/%d", issue.Id),
+	)
+
+	if issueUrl.IsNone() {
+		return false
+	}
+	return browser.OpenURL(issueUrl.Unwrap()) == nil
+}
+
+func (g *githubForge) resolveGitHubResourceURL(repo forgedomain.Repository, resource string) Option[string] {
+	resource = strings.TrimLeft(resource, "/")
+	if repoUrl := strings.TrimRight(repo.Url.UnwrapOrDefault(), "/"); repoUrl != "" {
+		return Some(repoUrl + "/" + resource)
+	}
+
+	if repo.Group == "" || repo.Project == "" || g.client == nil || g.client.BaseURL == nil {
+		return None[string]()
+	}
+
+	baseURL := strings.TrimRight(g.client.BaseURL.Scheme+"://"+g.client.BaseURL.Host, "/")
+	return Some(baseURL + "/" + repo.Group + "/" + repo.Project + "/" + resource)
 }
 
 func githubMergeProposalStatus(state *string, mergedAt *github.Timestamp) forgedomain.Value[forgedomain.MergeProposalState] {
@@ -157,10 +213,10 @@ func githubRepository(repository *github.Repository) Option[forgedomain.Reposito
 	}
 
 	var group string
-	if repository.GetOwner().GetName() != "" {
-		group = repository.GetOwner().GetName()
-	} else if repository.GetOrganization().GetName() != "" {
-		group = repository.GetOrganization().GetName()
+	if repository.GetOwner().GetLogin() != "" {
+		group = repository.GetOwner().GetLogin()
+	} else if repository.GetOrganization().GetLogin() != "" {
+		group = repository.GetOrganization().GetLogin()
 	}
 	return Some(forgedomain.Repository{
 		Group:   group,

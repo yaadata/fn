@@ -1,4 +1,8 @@
-linters-settings:
-  stylecheck:
-    dot-import-whitelist:
-      - "github.com/yaadata/optionsgo/core"
+version: "2"
+
+linters:
+  settings:
+    staticcheck:
+      dot-import-whitelist:
+        - "github.com/yaadata/optionsgo"
+        - "github.com/yaadata/optionsgo/core"
