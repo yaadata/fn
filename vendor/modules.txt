@@ -1,5 +1,15 @@
-# github.com/BurntSushi/toml v1.6.0
-## explicit; go 1.18
+# github.com/apple/pkl-go v0.13.1
+## explicit; go 1.24.0
+github.com/apple/pkl-go/pkl
+github.com/apple/pkl-go/pkl/internal
+github.com/apple/pkl-go/pkl/internal/msgapi
+# github.com/google/go-cmp v0.7.0
+## explicit; go 1.21
+github.com/google/go-cmp/cmp
+github.com/google/go-cmp/cmp/internal/diff
+github.com/google/go-cmp/cmp/internal/flags
+github.com/google/go-cmp/cmp/internal/function
+github.com/google/go-cmp/cmp/internal/value
 # github.com/google/go-github/v79 v79.0.1-0.20251126035600-3afe183d384c
 ## explicit; go 1.24.0
 github.com/google/go-github/v79/github
@@ -9,6 +19,23 @@ github.com/google/go-querystring/query
 # github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 ## explicit; go 1.14
 github.com/pkg/browser
+# github.com/shoenig/test v1.12.2
+## explicit; go 1.18
+github.com/shoenig/test/interfaces
+github.com/shoenig/test/internal/assertions
+github.com/shoenig/test/internal/constraints
+github.com/shoenig/test/internal/util
+github.com/shoenig/test/must
+github.com/shoenig/test/wait
+# github.com/vmihailenco/msgpack/v5 v5.4.1
+## explicit; go 1.19
+github.com/vmihailenco/msgpack/v5
+github.com/vmihailenco/msgpack/v5/msgpcode
+# github.com/vmihailenco/tagparser/v2 v2.0.0
+## explicit; go 1.15
+github.com/vmihailenco/tagparser/v2
+github.com/vmihailenco/tagparser/v2/internal
+github.com/vmihailenco/tagparser/v2/internal/parser
 # github.com/yaadata/optionsgo v0.5.0
 ## explicit; go 1.25.4
 github.com/yaadata/optionsgo

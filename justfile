@@ -11,3 +11,6 @@ unit-test:
     mise exec -- go test -tags=unit -p "$jobs" -race ./...
 
 test: unit-test
+
+generate-pkl:
+    mise exec -- pkl run package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.13.1#/gen.pkl --output-path pkl/golang --base-path github.com/yaadata/fn/pkl/golang pkl/schema.pkl

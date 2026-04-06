@@ -1,0 +1,31 @@
+@go.Package { name = "github.com/yaadata/fn/pkl/golang" }
+module fn.pkl
+
+import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.13.1#/go.pkl"
+
+typealias Provider = "github" | "codeberg"
+
+typealias AccessScheme = "personal_access_token"
+
+abstract class FetchConfig {
+  fixed strategy: "push" | "pull"
+}
+
+class PushFetchConfig extends FetchConfig {
+  fixed strategy = "push"
+}
+
+class PullFetchConfig extends FetchConfig {
+  fixed strategy = "pull"
+  interval: Duration = 5.min
+}
+
+class ProviderConfig {
+  name: Provider
+  accessScheme: AccessScheme
+  fetch: FetchConfig
+}
+
+class ForgeNotificationConfig {
+  providers: Listing(ProviderConfig)
+}
